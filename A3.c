@@ -36,25 +36,26 @@
 #define PROC_PRIORITY	 tskIDLE_PRIORITY 
 #define OUT_PRIORITY	 tskIDLE_PRIORITY 
 
-#define NUMBER_OF_STRING 5
-#define MAX_STRING_SIZE 40
 
-#define MAX 20
-/*
- * 
- */
+typedef struct taskInfo  {
+    char* name;
+    uint8_t number;
+    uint8_t period;
+    uint8_t phase;
+    uint8_t deadline;
+    TaskHandle_t xHandle;
+};
+ 
 
-//Globals
-float res; // sampled voltage
+taskInfo* task_info;
 
-
-SemaphoreHandle_t sem1; // https://www.freertos.org/xSemaphoreCreateBinary.html
-SemaphoreHandle_t sem2;
-float outValue;
-
+void createTask(void *pvParam){
+    BaseType_t xReturned;
+    xReturned = xTaskCreate( createTask, ( const signed char * const ) task_info->name, configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, task_info->xHandle );
+}
 
 void TMAN_Init(){
-    
+    task_info = (taskInfo*) pvPortMalloc (sizeof(taskInfo));
 }
 
 void TMAN_Close(){
@@ -63,10 +64,7 @@ void TMAN_Close(){
 
 
 void TMAN_TaskAdd(){
-    BaseType_t taskA;
-    TaskHandle_t a_task = NULL;
-    taskA = xTaskCreate( TMAN_TaskAdd, ( const signed char * const ) "A", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &a_task );
-    
+ 
 }
 
 void TMAN_TaskWaitPeriod(){
@@ -117,16 +115,20 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     }
     __XC_UART = 1; /* Redirect stdin/stdout/stderr to UART1*/
     
-    adcModule();
+    
     // Welcome message
     printf("Welcome Message1\n\r");
 
     // Create semaphore before starting tasks
-    sem1 = xSemaphoreCreateBinary();
-    sem2 = xSemaphoreCreateBinary();
 
     /* Create the tasks defined within this file. */
     
+    xTaskCreate( createTask, ( const signed char * const ) "A", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
+    xTaskCreate( createTask, ( const signed char * const ) "B", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
+    xTaskCreate( createTask, ( const signed char * const ) "C", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
+    xTaskCreate( createTask, ( const signed char * const ) "D", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
+    xTaskCreate( createTask, ( const signed char * const ) "E", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
+    xTaskCreate( createTask, ( const signed char * const ) "F", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
     
     
   
