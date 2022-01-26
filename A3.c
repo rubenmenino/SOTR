@@ -32,9 +32,15 @@
 #define OUT_PERIOD_MS 	( 100 / portTICK_RATE_MS ) //
 
 /* Priorities of the demo application tasks (high numb. -> high prio.) */
-#define ACQ_PRIORITY	 tskIDLE_PRIORITY 
-#define PROC_PRIORITY	 tskIDLE_PRIORITY 
 #define OUT_PRIORITY	 tskIDLE_PRIORITY 
+
+
+TaskHandle_t taskHandleA = NULL;
+TaskHandle_t taskHandleB = NULL;
+TaskHandle_t taskHandleC = NULL;
+TaskHandle_t taskHandleD = NULL;
+TaskHandle_t taskHandleE = NULL;
+TaskHandle_t taskHandleF = NULL;
 
 
 
@@ -47,6 +53,8 @@ void createTask(void *pvParam){
     for(;;) {
         vTaskDelayUntil(&pxPreviousWakeTime,ACQ_PERIOD_MS)
     }
+    
+    // PSEUDOCODE DO DELIVERABLE NAS TASKS CRIADAS????
 }
 
 
@@ -87,12 +95,12 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
 
     /* Create the tasks defined within this file. */
     
-    xTaskCreate( createTask, ( const signed char * const ) "A", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
-    xTaskCreate( createTask, ( const signed char * const ) "B", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
-    xTaskCreate( createTask, ( const signed char * const ) "C", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
-    xTaskCreate( createTask, ( const signed char * const ) "D", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
-    xTaskCreate( createTask, ( const signed char * const ) "E", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
-    xTaskCreate( createTask, ( const signed char * const ) "F", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
+    xTaskCreate( createTask, ( const signed char * const ) "A", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleA );
+    xTaskCreate( createTask, ( const signed char * const ) "B", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleB );
+    xTaskCreate( createTask, ( const signed char * const ) "C", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleC );
+    xTaskCreate( createTask, ( const signed char * const ) "D", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleD );
+    xTaskCreate( createTask, ( const signed char * const ) "E", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleE );
+    xTaskCreate( createTask, ( const signed char * const ) "F", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleF );
      
     //TMAN_TaskRegisterAtributes();
     

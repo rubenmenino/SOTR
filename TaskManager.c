@@ -34,7 +34,6 @@ typedef struct {
     double period;
     double phase;
     double deadline;
-    //TaskHandle_t xHandle;
 } taskInfo;
  
 
