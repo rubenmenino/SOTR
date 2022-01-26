@@ -37,38 +37,9 @@
 #define OUT_PRIORITY	 tskIDLE_PRIORITY 
 
 
-typedef struct taskInfo  {
-    char* name;
-    uint8_t number;
-    uint8_t period;
-    uint8_t phase;
-    uint8_t deadline;
-    TaskHandle_t xHandle;
-};
- 
 
-taskInfo* task_info;
-
+// code for task
 void createTask(void *pvParam){
-    BaseType_t xReturned;
-    xReturned = xTaskCreate( createTask, ( const signed char * const ) task_info->name, configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, task_info->xHandle );
-}
-
-void TMAN_Init(){
-    task_info = (taskInfo*) pvPortMalloc (sizeof(taskInfo));
-}
-
-void TMAN_Close(){
-    //vPortFree();  
-}
-
-
-void TMAN_TaskAdd(){
- 
-}
-
-void TMAN_TaskWaitPeriod(){
-    
     int iTaskTicks = 0;
     uint8_t mesg[80];
     TickType_t pxPreviousWakeTime;
@@ -76,11 +47,6 @@ void TMAN_TaskWaitPeriod(){
     for(;;) {
         vTaskDelayUntil(&pxPreviousWakeTime,ACQ_PERIOD_MS)
     }
-    
-}
-
-void TMAN_TaskStats(){
-    
 }
 
 
@@ -99,8 +65,6 @@ void acqA3(void *pvParam)
 
         // Wait for the next cycle
         vTaskDelayUntil(&pxPreviousWakeTime,ACQ_PERIOD_MS);     
-        
-      
     }
 }
 
@@ -129,13 +93,16 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     xTaskCreate( createTask, ( const signed char * const ) "D", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
     xTaskCreate( createTask, ( const signed char * const ) "E", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
     xTaskCreate( createTask, ( const signed char * const ) "F", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, NULL );
+     
+    //TMAN_TaskRegisterAtributes();
     
-    
-  
-    
+    //TMAN_TaskWaitPeriod();
         /* Finally start the scheduler. */
 	vTaskStartScheduler();
 
+    //int tickTasks = xTaskGetTickCount();
+    //printf("%d ticks", tickTasks);
+    
     return (0);
     
     

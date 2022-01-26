@@ -40,6 +40,8 @@
       <itemPath>../ConfigPerformance.c</itemPath>
       <itemPath>../../UART/uart.c</itemPath>
       <itemPath>../A3.c</itemPath>
+      <itemPath>../TaskManager.c</itemPath>
+      <itemPath>../TaskManager.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
