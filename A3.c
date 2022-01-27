@@ -95,12 +95,12 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
 
     /* Create the tasks defined within this file. */
     
-    xTaskCreate( createTask, ( const signed char * const ) "A", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleA );
-    xTaskCreate( createTask, ( const signed char * const ) "B", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleB );
-    xTaskCreate( createTask, ( const signed char * const ) "C", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleC );
-    xTaskCreate( createTask, ( const signed char * const ) "D", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleD );
-    xTaskCreate( createTask, ( const signed char * const ) "E", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleE );
-    xTaskCreate( createTask, ( const signed char * const ) "F", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, taskHandleF );
+    xTaskCreate( createTask, ( const signed char * const ) "A", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleA );
+    xTaskCreate( createTask, ( const signed char * const ) "B", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleB );
+    xTaskCreate( createTask, ( const signed char * const ) "C", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleC );
+    xTaskCreate( createTask, ( const signed char * const ) "D", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleD );
+    xTaskCreate( createTask, ( const signed char * const ) "E", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleE );
+    xTaskCreate( createTask, ( const signed char * const ) "F", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleF );
      
     //TMAN_TaskRegisterAtributes();
     

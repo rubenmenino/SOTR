@@ -56,7 +56,7 @@ void TMAN_Close(){
 }
 
 // Add a task to the framework
-void TMAN_TaskAdd(char* name){
+void TMAN_TaskAdd(void){
     BaseType_t xReturned;
     //xReturned = xTaskCreate( createTask, ( const signed char * const ) task_info->name, configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, task_info->xHandle );
 }
