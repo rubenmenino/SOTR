@@ -25,12 +25,9 @@
 #include "semphr.h"
 #include <string.h>
 
-
-
-
 typedef struct {
     char* name;
-    double number;
+    int number;
     double period;
     double phase;
     double deadline;
@@ -39,11 +36,6 @@ typedef struct {
 
 taskInfo* task_info;
 
-int periodicityTask(){
-    int freeRTOS_ticks = xTaskGetTickCount(); // default to 1 ms in pIC32
-    int tman_ticks = freeRTOS_ticks * 2;
-    return tman_ticks;
-}
 
 // Initialization of the framework
 void TMAN_Init(){
@@ -64,14 +56,14 @@ void TMAN_TaskAdd(void){
 // Register attributes (ex: period, phase, deadline, precedence contraints) for a task already added to the framework
 void TMAN_TaskRegisterAtributes(){
     for(;;){
-        int periodValue = periodicityTask();
-        printf("periodicity value = %d ",periodValue);
+        //int periodValue = periodicityTask();
+        //printf("periodicity value = %d ",periodValue);
     }
 }
 
 // Called by a task to signal the termination of an instance and wait for the next activation
 void TMAN_TaskWaitPeriod(){
-      
+      // xTaskAbortDelay() instead delayUnitl ???)
 }
 
 // Returns statisticals information about a task. Provided information must include at least the number of activations, but additional

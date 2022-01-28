@@ -27,11 +27,15 @@
 
 /* Set the tasks' period (in system ticks) */
 #define ACQ_PERIOD_MS 	( 100 / portTICK_RATE_MS ) //
-#define PROC_PERIOD_MS 	( 100 / portTICK_RATE_MS ) //
-#define OUT_PERIOD_MS 	( 100 / portTICK_RATE_MS ) //
+
 
 /* Priorities of the demo application tasks (high numb. -> high prio.) */
-#define OUT_PRIORITY	 tskIDLE_PRIORITY 
+#define PRIO_A	 (tskIDLE_PRIORITY + 1 )
+#define PRIO_B	 (tskIDLE_PRIORITY  )
+#define PRIO_C	 (tskIDLE_PRIORITY )
+#define PRIO_D	 (tskIDLE_PRIORITY )
+#define PRIO_E	 (tskIDLE_PRIORITY  )
+#define PRIO_F	 (tskIDLE_PRIORITY )
 
 SemaphoreHandle_t semA;
 SemaphoreHandle_t semB;
@@ -49,7 +53,7 @@ TaskHandle_t taskHandleF = NULL;
 
 
 // code for task
-void createTask(void *pvParam){
+void taskHighPriority(void *pvParam){
     int iTaskTicks = 0;
     uint8_t mesg[80];
     TickType_t pxPreviousWakeTime;
@@ -57,28 +61,68 @@ void createTask(void *pvParam){
     int i, j, IMAXCOUNT, JMAXCOUNT;
     
     for(;;) {
-        //TMAN_TaskWaitPeriod(); // add args if needed
-        int l = periodicityTask() / 2; // GET TICKS
-        char nameTask; // print "Task name " and " ticks"
-        printf("onde estou? ");
-        printf("%d\n", &l);
-        printf("%s , %d", nameTask, l);
+        xTaskNotifyGive(taskHandleB);
+        xTaskNotifyGive(taskHandleC);
+        xTaskNotifyGive(taskHandleD);
+        xTaskNotifyGive(taskHandleE);
+        xTaskNotifyGive(taskHandleF);
         
+        vTaskDelay(5000);   // VAIR SER A TMAN_WAITPERIOD
+        
+        
+        //TMAN_TaskWaitPeriod(); // add args if needed
+        //int l = periodicityTask() / 2; // GET TICKS
+        //char nameTask; // print "Task name " and " ticks"
+        printf("onde estou? ");
+        //printf("%d\n", &l);
+        
+        /*
         for(i = 0; i < IMAXCOUNT; i++){
             for(j = 0; j < JMAXCOUNT; j++){
                 //do some computation to consume time
             }
         }
         // other stuff (if needed))
-        
+        */
         
         
         //printf(omega);
-        vTaskDelayUntil(&pxPreviousWakeTime,ACQ_PERIOD_MS)
+        //vTaskDelayUntil(&pxPreviousWakeTime,ACQ_PERIOD_MS)
     }
     
-    // PSEUDOCODE DO DELIVERABLE NAS TASKS CRIADAS????
 }
+
+
+void otherTasks(void *pvParam)
+{
+    int iTaskTicks = 0;
+    uint8_t mesg[80];
+    TickType_t pxPreviousWakeTime;
+    
+    // Initialize the pxPreviousWakeTime variable with the current time
+    pxPreviousWakeTime = xTaskGetTickCount();
+    
+    for(;;) {
+        
+        //sprintf(mesg,"Task LedFlash (job %d)\n\r",iTaskTicks++);
+        //PrintStr(mesg);
+        int valueNotification;
+        valueNotification = ulTaskNotifyTake(pdTRUE, (TickType_t) portMAX_DELAY);
+        
+        if(valueNotification > 0){
+            printf(" notification received: %d\r\n", valueNotification);
+        }
+        
+        
+        
+        // Wait for the next cycle
+        //vTaskDelayUntil(&pxPreviousWakeTime,ACQ_PERIOD_MS);     
+    }
+}
+
+
+
+
 
 
 void acqA3(void *pvParam)
@@ -115,21 +159,21 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     printf("Welcome Message1\n\r");
 
     // Create semaphore before starting tasks
-    semA = xSemaphoreCreateBinary();
-    semB = xSemaphoreCreateBinary();
-    semC = xSemaphoreCreateBinary();
-    semD = xSemaphoreCreateBinary();
-    semE = xSemaphoreCreateBinary();
-    semF = xSemaphoreCreateBinary();
+    //semA = xSemaphoreCreateBinary();
+    //semB = xSemaphoreCreateBinary();
+    //semC = xSemaphoreCreateBinary();
+    //semD = xSemaphoreCreateBinary();
+    //semE = xSemaphoreCreateBinary();
+    //semF = xSemaphoreCreateBinary();
     
     /* Create the tasks defined within this file. */
     
-    xTaskCreate( createTask, ( const signed char * const ) "A", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleA );
-    xTaskCreate( createTask, ( const signed char * const ) "B", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleB );
-    //xTaskCreate( createTask, ( const signed char * const ) "C", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleC );
-    //xTaskCreate( createTask, ( const signed char * const ) "D", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleD );
-    //xTaskCreate( createTask, ( const signed char * const ) "E", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleE );
-    //xTaskCreate( createTask, ( const signed char * const ) "F", configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, &taskHandleF );
+    xTaskCreate( taskHighPriority,  "A", configMINIMAL_STACK_SIZE, NULL, PRIO_A, &taskHandleA );
+    xTaskCreate( otherTasks,  "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, &taskHandleB );
+    xTaskCreate( otherTasks,  "C", configMINIMAL_STACK_SIZE, NULL, PRIO_C, &taskHandleC );
+    xTaskCreate( otherTasks,  "D", configMINIMAL_STACK_SIZE, NULL, PRIO_D, &taskHandleD );
+    xTaskCreate( otherTasks,  "E", configMINIMAL_STACK_SIZE, NULL, PRIO_E, &taskHandleE );
+    xTaskCreate( otherTasks,  "F", configMINIMAL_STACK_SIZE, NULL, PRIO_F, &taskHandleF );
      
     //TMAN_TaskRegisterAtributes();
     
