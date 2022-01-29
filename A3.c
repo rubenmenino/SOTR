@@ -54,6 +54,7 @@ TaskHandle_t taskHandleD = NULL;
 TaskHandle_t taskHandleE = NULL;
 TaskHandle_t taskHandleF = NULL;
 
+TickType_t t_tick;
 
 // code for task
 void taskHighPriority(void *pvParam){
@@ -61,7 +62,7 @@ void taskHighPriority(void *pvParam){
     uint8_t mesg[80];
     TickType_t pxPreviousWakeTime;
     TaskHandle_t xTaskGetCurrentHandle();
-    xTimerHandle timerHnd05;
+    //xTimerHandle timerHnd05;
     
     int i, j, IMAXCOUNT, JMAXCOUNT;
     
@@ -85,12 +86,12 @@ void taskHighPriority(void *pvParam){
         for(i = 0; i < IMAXCOUNT; i++){
             for(j = 0; j < JMAXCOUNT; j++){
                 //do some computation to consume time
-                timerHnd05 = xTimerCreate(
+                /*timerHnd05 = xTimerCreate(
                         "timer05", 
                         pdMS_TO_TICKS(0.5),
                         pdTRUE,
                         (void*)0,
-                        vTimerCallback05Expired);
+                        vTimerCallback05Expired); */
             }
         }
         // other stuff (if needed))
@@ -103,9 +104,9 @@ void taskHighPriority(void *pvParam){
     
 }
 
-static void vTimerCallback05Expired(xTimerHandle pxTimer){
+/*static void vTimerCallback05Expired(xTimerHandle pxTimer){
     
-}
+}*/
 
 //
 //
@@ -158,11 +159,15 @@ void acqA3(void *pvParam)
     pxPreviousWakeTime = xTaskGetTickCount();
     
     for(;;) {
+        
+
         sprintf(mesg,"Task LedFlash (job %d)\n\r",iTaskTicks++);
         PrintStr(mesg);
+        
+         // Wait for the next cycle
+        vTaskDelayUntil(&pxPreviousWakeTime,t_tick); 
 
-        // Wait for the next cycle
-        vTaskDelayUntil(&pxPreviousWakeTime,ACQ_PERIOD_MS);     
+          
     }
 }
 
@@ -186,17 +191,20 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     //semB = xSemaphoreCreateBinary();
     //semC = xSemaphoreCreateBinary();
     //semD = xSemaphoreCreateBinary();
-    //semE = xSemaphoreCreateBinary();
+    //semE = xSemaphosreCreateBinary();
     //semF = xSemaphoreCreateBinary();
     
     /* Create the tasks defined within this file. */
     
-    xTaskCreate( taskHighPriority,  "highPriorityTask", configMINIMAL_STACK_SIZE, NULL, PRIO_A, &taskPriorityHandle );
-    xTaskCreate( otherTasks,  "A", configMINIMAL_STACK_SIZE, NULL, PRIO_B, &taskHandleA );
-    xTaskCreate( otherTasks,  "B", configMINIMAL_STACK_SIZE, NULL, PRIO_C, &taskHandleB );
-    xTaskCreate( otherTasks,  "C", configMINIMAL_STACK_SIZE, NULL, PRIO_D, &taskHandleC );
-    xTaskCreate( otherTasks,  "D", configMINIMAL_STACK_SIZE, NULL, PRIO_E, &taskHandleD );
-    xTaskCreate( otherTasks,  "E", configMINIMAL_STACK_SIZE, NULL, PRIO_F, &taskHandleE );
+    TMAN_Init(t_tick);
+    xTaskCreate( acqA3,  "highPriorityTask", configMINIMAL_STACK_SIZE, NULL, PRIO_TASK_PRIORITY, &taskPriorityHandle );
+    
+    //TMAN_TaskAdd();
+    xTaskCreate( otherTasks,  "A", configMINIMAL_STACK_SIZE, NULL, PRIO_A, &taskHandleA );
+    xTaskCreate( otherTasks,  "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, &taskHandleB );
+    xTaskCreate( otherTasks,  "C", configMINIMAL_STACK_SIZE, NULL, PRIO_C, &taskHandleC );
+    xTaskCreate( otherTasks,  "D", configMINIMAL_STACK_SIZE, NULL, PRIO_D, &taskHandleD );
+    xTaskCreate( otherTasks,  "E", configMINIMAL_STACK_SIZE, NULL, PRIO_E, &taskHandleE );
     xTaskCreate( otherTasks,  "F", configMINIMAL_STACK_SIZE, NULL, PRIO_F, &taskHandleF );
      
     //TMAN_TaskRegisterAtributes();

@@ -9,7 +9,10 @@
             <file>file:/C:/E/Dev/FreeRTOS/WorkingCopy/FreeRTOS/Demo/PIC32MX_MPLAB/main_full.c</file>
         </group>
         <group>
+            <file>file:/home/rubenmenino/Desktop/SOTR/PRÁTICAS/3-FreeRTOS/downloads/FreeRTOSv202111.00/FreeRTOS/Demo/SOTR_Tman/TaskManager.h</file>
+            <file>file:/home/rubenmenino/Desktop/SOTR/PRÁTICAS/3-FreeRTOS/downloads/FreeRTOSv202111.00/FreeRTOS/Demo/SOTR_Tman/TaskManager.c</file>
             <file>file:/home/rubenmenino/Desktop/SOTR/PRÁTICAS/3-FreeRTOS/downloads/FreeRTOSv202111.00/FreeRTOS/Demo/SOTR_Tman/A3.c</file>
+            <file>file:/home/rubenmenino/Desktop/SOTR/PRÁTICAS/3-FreeRTOS/downloads/FreeRTOSv202111.00/FreeRTOS/Source/include/FreeRTOS.h</file>
         </group>
     </open-files>
 </project-private>

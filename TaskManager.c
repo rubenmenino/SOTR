@@ -25,6 +25,8 @@
 #include "semphr.h"
 #include <string.h>
 
+
+
 typedef struct {
     char* name;
     int number;
@@ -34,12 +36,16 @@ typedef struct {
 } taskInfo;
  
 
-taskInfo* task_info;
-
+taskInfo *task_info;
+TickType_t tick1;
 
 // Initialization of the framework
-void TMAN_Init(){
+void TMAN_Init(int tick){
+    tick1 = (TickType_t) tick;
     task_info = (taskInfo*) pvPortMalloc (sizeof(taskInfo));
+    task_info -> number = 1;
+    
+    TMAN_TaskAdd(&task_info);
 }
 
 // Terminate the framework
@@ -48,8 +54,9 @@ void TMAN_Close(){
 }
 
 // Add a task to the framework
-void TMAN_TaskAdd(void){
-    BaseType_t xReturned;
+void TMAN_TaskAdd(){
+    task_info = (taskInfo*) pvPortMalloc (sizeof(taskInfo));
+    task_info -> number++;
     //xReturned = xTaskCreate( createTask, ( const signed char * const ) task_info->name, configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, task_info->xHandle );
 }
 
