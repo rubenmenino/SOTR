@@ -137,37 +137,8 @@ void otherTasks(void *pvParam)
             printf(" notification received: %d\r\n", valueNotification);
         }
         
-        
-        
         // Wait for the next cycle
         //vTaskDelayUntil(&pxPreviousWakeTime,ACQ_PERIOD_MS);     
-    }
-}
-
-
-
-
-
-
-void acqA3(void *pvParam)
-{
-    int iTaskTicks = 0;
-    uint8_t mesg[80];
-    TickType_t pxPreviousWakeTime;
-    
-    // Initialize the pxPreviousWakeTime variable with the current time
-    pxPreviousWakeTime = xTaskGetTickCount();
-    
-    for(;;) {
-        
-
-        sprintf(mesg,"Task LedFlash (job %d)\n\r",iTaskTicks++);
-        PrintStr(mesg);
-        
-         // Wait for the next cycle
-        vTaskDelayUntil(&pxPreviousWakeTime,t_tick); 
-
-          
     }
 }
 
@@ -196,17 +167,21 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     
     /* Create the tasks defined within this file. */
     
+    printf("TMAN_TaskInit\n\r");
     TMAN_Init(t_tick);
-    xTaskCreate( acqA3,  "highPriorityTask", configMINIMAL_STACK_SIZE, NULL, PRIO_TASK_PRIORITY, &taskPriorityHandle );
+    printf("TMAN_TaskAdd\n\r");
+    TMAN_TaskAdd();
+    
     
     //TMAN_TaskAdd();
+    /*
     xTaskCreate( otherTasks,  "A", configMINIMAL_STACK_SIZE, NULL, PRIO_A, &taskHandleA );
     xTaskCreate( otherTasks,  "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, &taskHandleB );
     xTaskCreate( otherTasks,  "C", configMINIMAL_STACK_SIZE, NULL, PRIO_C, &taskHandleC );
     xTaskCreate( otherTasks,  "D", configMINIMAL_STACK_SIZE, NULL, PRIO_D, &taskHandleD );
     xTaskCreate( otherTasks,  "E", configMINIMAL_STACK_SIZE, NULL, PRIO_E, &taskHandleE );
     xTaskCreate( otherTasks,  "F", configMINIMAL_STACK_SIZE, NULL, PRIO_F, &taskHandleF );
-     
+    */
     //TMAN_TaskRegisterAtributes();
     
     //TMAN_TaskWaitPeriod();
