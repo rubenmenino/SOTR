@@ -30,20 +30,23 @@
 
 
 /* Priorities of the demo application tasks (high numb. -> high prio.) */
-#define PRIO_A	 (tskIDLE_PRIORITY + 1 )
-#define PRIO_B	 (tskIDLE_PRIORITY  )
-#define PRIO_C	 (tskIDLE_PRIORITY )
-#define PRIO_D	 (tskIDLE_PRIORITY )
-#define PRIO_E	 (tskIDLE_PRIORITY  )
-#define PRIO_F	 (tskIDLE_PRIORITY )
 
-SemaphoreHandle_t semA;
-SemaphoreHandle_t semB;
-SemaphoreHandle_t semC;
-SemaphoreHandle_t semD;
-SemaphoreHandle_t semE;
-SemaphoreHandle_t semF;
+#define PRIO_TASK_PRIORITY (tskIDLE_PRIORITY +1 )
+#define PRIO_A	 tskIDLE_PRIORITY
+#define PRIO_B	 tskIDLE_PRIORITY
+#define PRIO_C	 tskIDLE_PRIORITY
+#define PRIO_D	 tskIDLE_PRIORITY
+#define PRIO_E	 tskIDLE_PRIORITY
+#define PRIO_F	 tskIDLE_PRIORITY
 
+//SemaphoreHandle_t semA;
+//SemaphoreHandle_t semB;
+//SemaphoreHandle_t semC;
+//SemaphoreHandle_t semD;
+//SemaphoreHandle_t semE;
+//SemaphoreHandle_t semF;
+
+TaskHandle_t taskPriorityHandle = NULL;
 TaskHandle_t taskHandleA = NULL;
 TaskHandle_t taskHandleB = NULL;
 TaskHandle_t taskHandleC = NULL;
@@ -58,6 +61,8 @@ void taskHighPriority(void *pvParam){
     uint8_t mesg[80];
     TickType_t pxPreviousWakeTime;
     TaskHandle_t xTaskGetCurrentHandle();
+    xTimerHandle timerHnd05;
+    
     int i, j, IMAXCOUNT, JMAXCOUNT;
     
     for(;;) {
@@ -76,14 +81,20 @@ void taskHighPriority(void *pvParam){
         printf("onde estou? ");
         //printf("%d\n", &l);
         
-        /*
+        
         for(i = 0; i < IMAXCOUNT; i++){
             for(j = 0; j < JMAXCOUNT; j++){
                 //do some computation to consume time
+                timerHnd05 = xTimerCreate(
+                        "timer05", 
+                        pdMS_TO_TICKS(0.5),
+                        pdTRUE,
+                        (void*)0,
+                        vTimerCallback05Expired);
             }
         }
         // other stuff (if needed))
-        */
+        
         
         
         //printf(omega);
@@ -91,6 +102,18 @@ void taskHighPriority(void *pvParam){
     }
     
 }
+
+static void vTimerCallback05Expired(xTimerHandle pxTimer){
+    
+}
+
+//
+//
+//
+        // https://mcuoneclipse.com/2018/05/27/tutorial-understanding-and-using-freertos-software-timers
+//
+//
+//
 
 
 void otherTasks(void *pvParam)
@@ -168,11 +191,12 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     
     /* Create the tasks defined within this file. */
     
-    xTaskCreate( taskHighPriority,  "A", configMINIMAL_STACK_SIZE, NULL, PRIO_A, &taskHandleA );
-    xTaskCreate( otherTasks,  "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, &taskHandleB );
-    xTaskCreate( otherTasks,  "C", configMINIMAL_STACK_SIZE, NULL, PRIO_C, &taskHandleC );
-    xTaskCreate( otherTasks,  "D", configMINIMAL_STACK_SIZE, NULL, PRIO_D, &taskHandleD );
-    xTaskCreate( otherTasks,  "E", configMINIMAL_STACK_SIZE, NULL, PRIO_E, &taskHandleE );
+    xTaskCreate( taskHighPriority,  "highPriorityTask", configMINIMAL_STACK_SIZE, NULL, PRIO_A, &taskPriorityHandle );
+    xTaskCreate( otherTasks,  "A", configMINIMAL_STACK_SIZE, NULL, PRIO_B, &taskHandleA );
+    xTaskCreate( otherTasks,  "B", configMINIMAL_STACK_SIZE, NULL, PRIO_C, &taskHandleB );
+    xTaskCreate( otherTasks,  "C", configMINIMAL_STACK_SIZE, NULL, PRIO_D, &taskHandleC );
+    xTaskCreate( otherTasks,  "D", configMINIMAL_STACK_SIZE, NULL, PRIO_E, &taskHandleD );
+    xTaskCreate( otherTasks,  "E", configMINIMAL_STACK_SIZE, NULL, PRIO_F, &taskHandleE );
     xTaskCreate( otherTasks,  "F", configMINIMAL_STACK_SIZE, NULL, PRIO_F, &taskHandleF );
      
     //TMAN_TaskRegisterAtributes();
