@@ -30,25 +30,27 @@
 typedef struct {
     char* name;
     int number;
-    double period;
-    double phase;
-    double deadline;
+    int period;
+    int phase;
+    int deadline;
+    SemaphoreHandle_t x;
 } taskInfo;
  
-
+taskInfo tI[1];
 taskInfo *task_info;
 TickType_t tick1;
-
+int tic_now;
 
 void acqA3(void *pvParam)
 {
+    printf("entrou\n");
     int iTaskTicks = 0;
     uint8_t mesg[80];
     TickType_t pxPreviousWakeTime;
     
     // Initialize the pxPreviousWakeTime variable with the current time
     pxPreviousWakeTime = xTaskGetTickCount();
-    
+    printf("antes for\n");
     for(;;) {
         
         sprintf(mesg,"Task LedFlash (job %d)\n\r",iTaskTicks++);
@@ -56,6 +58,8 @@ void acqA3(void *pvParam)
         
          // Wait for the next cycle
         vTaskDelayUntil(&pxPreviousWakeTime,tick1); 
+        
+        xSemaphoreGive(tI[1].x);
 
     }
 }
@@ -65,9 +69,11 @@ void acqA3(void *pvParam)
 void TMAN_Init(int tick){
     tick1 = (TickType_t) tick;
     task_info = (taskInfo*) pvPortMalloc (sizeof(taskInfo));
-    task_info -> number = 1;
-    xTaskCreate( acqA3,  "highPriorityTask", configMINIMAL_STACK_SIZE, NULL, PRIO_TASK_PRIORITY, NULL );
-    
+    task_info -> number = 0;
+    tic_now = 0;
+    printf("entrou init\n");
+    xTaskCreate( acqA3,  (const signed char * const) "highPriorityTask", configMINIMAL_STACK_SIZE, NULL, PRIO_TASK_PRIORITY, NULL );
+    printf("criou tick hanfdler\n");
     //TMAN_TaskAdd();
 }
 
@@ -93,7 +99,8 @@ void TMAN_TaskRegisterAtributes(){
 }
 
 // Called by a task to signal the termination of an instance and wait for the next activation
-void TMAN_TaskWaitPeriod(){
+void TMAN_TaskWaitPeriod(int number){
+    xSemaphoreTake(tI[1].x, portMAX_DELAY);
       // xTaskAbortDelay() instead delayUnitl ???)
 }
 

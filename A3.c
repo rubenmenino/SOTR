@@ -26,7 +26,7 @@
 #define PBCLOCK 40000000UL // Peripheral Bus Clock frequency, in Hz
 
 /* Set the tasks' period (in system ticks) */
-#define ACQ_PERIOD_MS 	( 100 / portTICK_RATE_MS ) //
+#define ACQ_PERIOD_MS 	( 1000 / portTICK_RATE_MS ) //
 
 
 /* Priorities of the demo application tasks (high numb. -> high prio.) */
@@ -168,9 +168,11 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     /* Create the tasks defined within this file. */
     
     printf("TMAN_TaskInit\n\r");
-    TMAN_Init(t_tick);
+    TMAN_Init(ACQ_PERIOD_MS);
     printf("TMAN_TaskAdd\n\r");
     TMAN_TaskAdd();
+    
+    TMAN_TaskWaitPeriod(0);
     
     
     //TMAN_TaskAdd();

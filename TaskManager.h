@@ -18,11 +18,11 @@
 #ifndef __TASKMANAGER_H__    /* Guard against multiple inclusion */
 #define __TASKMANAGER_H__
 
-void TMAN_Init(int);
+void TMAN_Init();
 void TMAN_Close(void);
 void TMAN_TaskAdd();
 void TMAN_TaskRegisterAtributes(void);
-void TMAN_TaskWaitPeriod(void);
+void TMAN_TaskWaitPeriod(int);
 void TMAN_TaskStats(void);
 
 #endif 
