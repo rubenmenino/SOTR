@@ -22,7 +22,7 @@ void TMAN_Init();
 void TMAN_Close(void);
 void TMAN_TaskAdd();
 void TMAN_TaskRegisterAtributes(void);
-void TMAN_TaskWaitPeriod(int);
+void TMAN_TaskWaitPeriod();
 void TMAN_TaskStats(void);
 
 #endif 

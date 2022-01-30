@@ -26,7 +26,8 @@
 #define PBCLOCK 40000000UL // Peripheral Bus Clock frequency, in Hz
 
 /* Set the tasks' period (in system ticks) */
-#define ACQ_PERIOD_MS 	( 1000 / portTICK_RATE_MS ) //
+#define ACQ_PERIOD_MS 	( 3000 / portTICK_RATE_MS ) //
+#define B_PERIOD_MS 	( 2000 / portTICK_RATE_MS ) //
 
 
 /* Priorities of the demo application tasks (high numb. -> high prio.) */
@@ -46,6 +47,7 @@
 //SemaphoreHandle_t semE;
 //SemaphoreHandle_t semF;
 
+char task_name[16];
 TaskHandle_t taskPriorityHandle = NULL;
 TaskHandle_t taskHandleA = NULL;
 TaskHandle_t taskHandleB = NULL;
@@ -125,9 +127,30 @@ void otherTasks(void *pvParam)
     
     // Initialize the pxPreviousWakeTime variable with the current time
     pxPreviousWakeTime = xTaskGetTickCount();
+    TickType_t t;
+    TickType_t tb;
     
     for(;;) {
+        t = xTaskGetTickCount();
+        sprintf(mesg,"A, %d\n\r",t);
+        PrintStr(mesg);
         
+        /*
+        tb = xTaskGetTickCount();
+        sprintf(mesg,"B, %d\n\r",tb);
+        PrintStr(mesg);
+        */
+        
+        /*
+        if (taskHandleB == "B"){
+            sprintf(mesg,"B, %d\n\r",);
+            PrintStr(mesg);
+        }
+         * */
+        
+        TMAN_TaskWaitPeriod();
+        
+        /*
         //sprintf(mesg,"Task LedFlash (job %d)\n\r",iTaskTicks++);
         //PrintStr(mesg);
         int valueNotification;
@@ -138,7 +161,8 @@ void otherTasks(void *pvParam)
         }
         
         // Wait for the next cycle
-        //vTaskDelayUntil(&pxPreviousWakeTime,ACQ_PERIOD_MS);     
+        //vTaskDelayUntil(&pxPreviousWakeTime,ACQ_PERIOD_MS);   
+        */
     }
 }
 
@@ -167,25 +191,35 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     
     /* Create the tasks defined within this file. */
     
-    printf("TMAN_TaskInit\n\r");
-    TMAN_Init(ACQ_PERIOD_MS);
-    printf("TMAN_TaskAdd\n\r");
-    TMAN_TaskAdd();
     
-    TMAN_TaskWaitPeriod(0);
+    
+    //TMAN_TaskWaitPeriod();
     
     
     //TMAN_TaskAdd();
-    /*
-    xTaskCreate( otherTasks,  "A", configMINIMAL_STACK_SIZE, NULL, PRIO_A, &taskHandleA );
-    xTaskCreate( otherTasks,  "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, &taskHandleB );
+    
+    xTaskCreate( otherTasks,  "A", configMINIMAL_STACK_SIZE, NULL, PRIO_A, NULL );
+   
+    xTaskCreate( otherTasks,  "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, NULL );
+    /**
     xTaskCreate( otherTasks,  "C", configMINIMAL_STACK_SIZE, NULL, PRIO_C, &taskHandleC );
     xTaskCreate( otherTasks,  "D", configMINIMAL_STACK_SIZE, NULL, PRIO_D, &taskHandleD );
     xTaskCreate( otherTasks,  "E", configMINIMAL_STACK_SIZE, NULL, PRIO_E, &taskHandleE );
     xTaskCreate( otherTasks,  "F", configMINIMAL_STACK_SIZE, NULL, PRIO_F, &taskHandleF );
     */
     //TMAN_TaskRegisterAtributes();
+    printf("TMAN_TaskInit\n\r");
+    TMAN_Init(ACQ_PERIOD_MS);
+    printf("TMAN_TaskAdd\n\r");
+    TMAN_TaskAdd();
     
+    /*
+    printf("TMAN_TaskInit\n\r");
+    TMAN_Init(B_PERIOD_MS);
+    printf("TMAN_TaskAdd\n\r");
+    TMAN_TaskAdd();
+    
+    */
     //TMAN_TaskWaitPeriod();
         /* Finally start the scheduler. */
 	vTaskStartScheduler();
