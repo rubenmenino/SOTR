@@ -31,23 +31,26 @@ typedef struct {
     char* name;
     int number;
     int period;
+    int nextActivation;
     int phase;
     int deadline;
     SemaphoreHandle_t x;
 } taskInfo;
  
-taskInfo tI[1];
-taskInfo *task_info;
+taskInfo task_list[6];
+//taskInfo *task_info;
 TickType_t tick_TMAN;
-int tick_now;
+int tick_now = 0;
 
-void acqA3(void *pvParam)
+int task_counter = 0;
+
+void tick_updater(void *pvParam)
 {
     printf("entrou\n");
     int iTaskTicks = 0;
     uint8_t mesg[80];
     TickType_t pxPreviousWakeTime;
-    tI[1].x = xSemaphoreCreateBinary();
+    //tI[1].x = xSemaphoreCreateBinary();
     // Initialize the pxPreviousWakeTime variable with the current time
     pxPreviousWakeTime = xTaskGetTickCount();
     printf("antes for\n");
@@ -58,12 +61,12 @@ void acqA3(void *pvParam)
         
          // Wait for the next cycle
         vTaskDelayUntil(&pxPreviousWakeTime,tick_TMAN); 
+        tick_now++;
         
-        
-        xSemaphoreGive(tI[1].x);
+        //xSemaphoreGive(tI[1].x);
         //xSemaphoreGive(tI[2].x);
         //printf("deu GIVE\n");
-        tick_now++;
+        
     }
 }
 
@@ -71,12 +74,12 @@ void acqA3(void *pvParam)
 // Initialization of the framework
 void TMAN_Init(int tick){
     tick_TMAN = (TickType_t) tick;
-    task_info = (taskInfo*) pvPortMalloc (sizeof(taskInfo));
-    task_info -> number = 0;
-    tick_now = 0;
+    //task_info = (taskInfo*) pvPortMalloc (sizeof(taskInfo));
+    //task_info -> number = 0;
+    //tick_now = 0;
     
     printf("entrou init\n");
-    xTaskCreate( acqA3,  (const signed char * const) "highPriorityTask", configMINIMAL_STACK_SIZE, NULL, PRIO_TASK_PRIORITY, NULL );
+    xTaskCreate( tick_updater,  (const signed char * const) "highPriorityTask", configMINIMAL_STACK_SIZE, NULL, PRIO_TASK_PRIORITY, NULL );
     printf("criou tick hanfdler\n");
     //TMAN_TaskAdd();
 }
@@ -88,23 +91,32 @@ void TMAN_Close(){
 
 // Add a task to the framework
 void TMAN_TaskAdd(){
-    task_info = (taskInfo*) pvPortMalloc (sizeof(taskInfo));
-    task_info -> number++;
-    printf("number %d", task_info->number);
+    
+    //task_info = (taskInfo*) pvPortMalloc (sizeof(taskInfo));
+    //task_info -> task_counter++;
+    
+    task_list[task_counter].number = task_counter;
+    
+    printf("task add %d", task_counter);
+    
+    task_counter++;
     //xReturned = xTaskCreate( createTask, ( const signed char * const ) task_info->name, configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, task_info->xHandle );
 }
 
 // Register attributes (ex: period, phase, deadline, precedence contraints) for a task already added to the framework
-void TMAN_TaskRegisterAtributes(){
-    for(;;){
-        //int periodValue = periodicityTask();
-        //printf("periodicity value = %d ",periodValue);
-    }
+void TMAN_TaskRegisterAtributes(int task_id, int period, int deadline, int phase, int precedence){
+    
+    task_list[task_id].period = period;
+    task_list[task_id].nextActivation = period + phase;
+    task_list[task_id].deadline = deadline;
+    task_list[task_id].phase = phase;
+    
+    printf("task register %d", task_id);
 }
 
 // Called by a task to signal the termination of an instance and wait for the next activation
 void TMAN_TaskWaitPeriod(){
-    xSemaphoreTake(tI[1].x, portMAX_DELAY);
+    xSemaphoreTake(task_list[1].x, portMAX_DELAY);
     //xSemaphoreTake(tI[2].x, portMAX_DELAY);
       // xTaskAbortDelay() instead delayUnitl ???)
 }

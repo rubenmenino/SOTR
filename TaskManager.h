@@ -21,7 +21,7 @@
 void TMAN_Init();
 void TMAN_Close(void);
 void TMAN_TaskAdd();
-void TMAN_TaskRegisterAtributes(void);
+void TMAN_TaskRegisterAtributes(int, int, int, int, int);
 void TMAN_TaskWaitPeriod();
 void TMAN_TaskStats(void);
 

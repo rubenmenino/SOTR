@@ -128,7 +128,7 @@ void otherTasks(void *pvParam)
     // Initialize the pxPreviousWakeTime variable with the current time
     pxPreviousWakeTime = xTaskGetTickCount();
     TickType_t t;
-    TickType_t tb;
+    //TickType_t tb;
     
     for(;;) {
         t = xTaskGetTickCount();
@@ -167,6 +167,8 @@ void otherTasks(void *pvParam)
 }
 
 
+
+
 int mainSetrLedBlinkA3(int argc, char** argv) {
     
     
@@ -200,7 +202,7 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     
     xTaskCreate( otherTasks,  "A", configMINIMAL_STACK_SIZE, NULL, PRIO_A, NULL );
    
-    xTaskCreate( otherTasks,  "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, NULL );
+    //xTaskCreate( otherTasksB,  "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, NULL );
     /**
     xTaskCreate( otherTasks,  "C", configMINIMAL_STACK_SIZE, NULL, PRIO_C, &taskHandleC );
     xTaskCreate( otherTasks,  "D", configMINIMAL_STACK_SIZE, NULL, PRIO_D, &taskHandleD );
@@ -213,13 +215,11 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     printf("TMAN_TaskAdd\n\r");
     TMAN_TaskAdd();
     
-    /*
-    printf("TMAN_TaskInit\n\r");
-    TMAN_Init(B_PERIOD_MS);
-    printf("TMAN_TaskAdd\n\r");
-    TMAN_TaskAdd();
     
-    */
+    //TMAN_Init(B_PERIOD_MS);
+    //TMAN_TaskAdd();
+    
+    
     //TMAN_TaskWaitPeriod();
         /* Finally start the scheduler. */
 	vTaskStartScheduler();
