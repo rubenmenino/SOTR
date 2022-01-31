@@ -31,12 +31,12 @@
 
 /* Priorities of the demo application tasks (high numb. -> high prio.) */
 
-#define PRIO_A	 tskIDLE_PRIORITY + 1
-#define PRIO_B	 tskIDLE_PRIORITY + 1
-#define PRIO_C	 tskIDLE_PRIORITY + 1
-#define PRIO_D	 tskIDLE_PRIORITY + 1
+#define PRIO_A	 tskIDLE_PRIORITY + 3
+#define PRIO_B	 tskIDLE_PRIORITY + 3
+#define PRIO_C	 tskIDLE_PRIORITY + 2
+#define PRIO_D	 tskIDLE_PRIORITY + 2
 #define PRIO_E	 tskIDLE_PRIORITY + 1
-#define PRIO_F	 tskIDLE_PRIORITY + 1
+#define PRIO_F	 tskIDLE_PRIORITY + 0
 
 int idA = 0;
 int idB = 1;
@@ -44,7 +44,7 @@ int idC = 2;
 int idD = 3;
 int idE = 4;
 int idF = 5;
-int tman_ticks = 1000;
+int tman_ticks = 100;
 
 
 void simpleA(void *pvParam)
@@ -157,29 +157,29 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
 
     
     TMAN_TaskAdd();
-    TMAN_TaskRegisterAtributes(idA, 8, 8, 4, -1); // id, period, deadline, phase, precedence
+    TMAN_TaskRegisterAtributes(idA, 1, 1, 0, -1); // id, period, deadline, phase, precedence
     xTaskCreate( simpleA, "A", configMINIMAL_STACK_SIZE, NULL, PRIO_A, NULL );
 
     TMAN_TaskAdd();
-    TMAN_TaskRegisterAtributes(idB, 4, 4, 0, 0);
+    TMAN_TaskRegisterAtributes(idB, 1, 1, 0, -1);
     xTaskCreate( simpleB, "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, NULL );
-/*
+
     TMAN_TaskAdd();
-    TMAN_TaskRegisterAtributes(idC, 3, 1, 50, -1);
+    TMAN_TaskRegisterAtributes(idC, 2, 1, 0, 4);
     xTaskCreate( simpleC, "C", configMINIMAL_STACK_SIZE, NULL, PRIO_C, NULL );
-/*
+
     TMAN_TaskAdd();
-    TMAN_TaskRegisterAtributes(idD, 4, 1, 50, -1);
+    TMAN_TaskRegisterAtributes(idD, 2, 1, 1, -1);
     xTaskCreate( simpleD, "D", configMINIMAL_STACK_SIZE, NULL, PRIO_D, NULL );
     
     TMAN_TaskAdd();
-    TMAN_TaskRegisterAtributes(idE, 5, 1, 50, -1);
+    TMAN_TaskRegisterAtributes(idE, 5, 1, 2, -1);
     xTaskCreate( simpleE, "E", configMINIMAL_STACK_SIZE, NULL, PRIO_E, NULL );
     
     TMAN_TaskAdd();
-    TMAN_TaskRegisterAtributes(idF, 6, 1, 50, -1);
+    TMAN_TaskRegisterAtributes(idF, 10, 1, 0, -1);
     xTaskCreate( simpleF, "F", configMINIMAL_STACK_SIZE, NULL, PRIO_F, NULL );
-     */
+     
     //printf("%d number of Activations\n", TMAN_TaskStats(idF));
 
     

@@ -25,7 +25,7 @@
 #include "semphr.h"
 #include <string.h>
 
-#define PRIO_TASK_PRIORITY (tskIDLE_PRIORITY + 3)
+#define PRIO_TASK_PRIORITY (tskIDLE_PRIORITY + 4)
 
 typedef struct {        // struct das tasks
     char* name;
@@ -174,7 +174,7 @@ void TMAN_TaskRegisterAtributes(int task_id, int period, int deadline, int phase
 // Returns statisticals information about a task. Provided information must include at least the number of activations, but additional
 // (ex: number of deadline misses) will be valued.
 void TMAN_TaskStats(int task_id){
-    printf("Task %d number of Activations %d \n", task_id, task_list[task_id].nActivations);
-    printf("Task %d number of Completions %d \n", task_id, task_list[task_id].nCompletions);
+    //printf("Task %d number of Activations %d \n", task_id, task_list[task_id].nActivations);
+    //printf("Task %d number of Completions %d \n", task_id, task_list[task_id].nCompletions);
 
 }
