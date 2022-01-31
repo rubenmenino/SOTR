@@ -1,8 +1,8 @@
 /* 
  * 
- * Author: Paulo Pedreiras
+ * Authors: Paulo Pedreiras
  * Ruben Menino 89185   
- * Joao Génio 88771
+ * Joao Genio 88771
  *
 
  * 
@@ -25,63 +25,84 @@
 #include "semphr.h"
 #include <string.h>
 
-#define PRIO_TASK_PRIORITY (tskIDLE_PRIORITY +1 )
+#define PRIO_TASK_PRIORITY (tskIDLE_PRIORITY + 3)
 
 typedef struct {
     char* name;
-    int number;
+    int id;
     int period;
     int nextActivation;
     int phase;
     int deadline;
-    SemaphoreHandle_t x;
+    TaskHandle_t handler;
+    SemaphoreHandle_t sem;
 } taskInfo;
- 
-taskInfo task_list[6];
-//taskInfo *task_info;
-TickType_t tick_TMAN;
-int tick_now = 0;
 
+
+
+taskInfo task_list[6];
+taskInfo teste;
+TickType_t tick_TMAN;
+
+int tick_now = 0;
 int task_counter = 0;
+
 
 void tick_updater(void *pvParam)
 {
-    printf("entrou\n");
+    
+    //printf("entrou\n");
     int iTaskTicks = 0;
-    uint8_t mesg[80];
-    TickType_t pxPreviousWakeTime;
-    //tI[1].x = xSemaphoreCreateBinary();
-    // Initialize the pxPreviousWakeTime variable with the current time
-    pxPreviousWakeTime = xTaskGetTickCount();
-    printf("antes for\n");
+    
+    //printf("antes for\n");
+    TickType_t pxPreviousWakeTime = xTaskGetTickCount();
+    //TickType_t pxPreviousWakeTime = xTaskGetTickCount();
     for(;;) {
         
-        sprintf(mesg,"[], %d\n\r",tick_now);
-        PrintStr(mesg);
         
-         // Wait for the next cycle
-        vTaskDelayUntil(&pxPreviousWakeTime,tick_TMAN); 
+        //printf("TICK %d\n", pxPreviousWakeTime);
+        
+        // Initialize the pxPreviousWakeTime variable with the current time
+        
+        
+        printf("TICK %d\n", pxPreviousWakeTime);
+        printf("TMAN %d\n", tick_now);
+        
+        
+        for(int i = 0; i < task_counter; i++) {
+            printf("resume %d\n", i);
+            
+            xSemaphoreGive(task_list[i].sem);
+            //printf("dá give\n");
+            //vTaskResume(task_list[i].handler);
+        }
+        
+        //printf("tman value %d\n", tick_TMAN);
+        // Wait for the next cycle
+        
         tick_now++;
-        
-        //xSemaphoreGive(tI[1].x);
-        //xSemaphoreGive(tI[2].x);
-        //printf("deu GIVE\n");
-        
+        vTaskDelayUntil(&pxPreviousWakeTime,tick_TMAN);
     }
+    
+    
 }
 
+// Called by a task to signal the termination of an instance and wait for the next activation
+void TMAN_TaskWaitPeriod(int task_id){
+    //printf("ENTRA NA TASK WAIT??\n");
+    xSemaphoreTake(task_list[task_id].sem, portMAX_DELAY);
+    printf("sleep %d\n", task_id);
+    //vTaskSuspend(task_list[task_id].handler);
+
+}
 
 // Initialization of the framework
 void TMAN_Init(int tick){
     tick_TMAN = (TickType_t) tick;
-    //task_info = (taskInfo*) pvPortMalloc (sizeof(taskInfo));
-    //task_info -> number = 0;
-    //tick_now = 0;
-    
-    printf("entrou init\n");
+
+    //printf("entrou init\n");
     xTaskCreate( tick_updater,  (const signed char * const) "highPriorityTask", configMINIMAL_STACK_SIZE, NULL, PRIO_TASK_PRIORITY, NULL );
-    printf("criou tick hanfdler\n");
-    //TMAN_TaskAdd();
+    //printf("criou tick handler\n");
 }
 
 // Terminate the framework
@@ -90,17 +111,15 @@ void TMAN_Close(){
 }
 
 // Add a task to the framework
-void TMAN_TaskAdd(){
+void TMAN_TaskAdd(TaskHandle_t handler){
     
-    //task_info = (taskInfo*) pvPortMalloc (sizeof(taskInfo));
-    //task_info -> task_counter++;
+    task_list[task_counter].sem =  xSemaphoreCreateBinary();
+    task_list[task_counter].id = task_counter;
+    task_list[task_counter].handler = handler;
     
-    task_list[task_counter].number = task_counter;
-    
-    printf("task add %d", task_counter);
+    printf("task add %d\n", task_counter);
     
     task_counter++;
-    //xReturned = xTaskCreate( createTask, ( const signed char * const ) task_info->name, configMINIMAL_STACK_SIZE, NULL, OUT_PRIORITY, task_info->xHandle );
 }
 
 // Register attributes (ex: period, phase, deadline, precedence contraints) for a task already added to the framework
@@ -111,15 +130,9 @@ void TMAN_TaskRegisterAtributes(int task_id, int period, int deadline, int phase
     task_list[task_id].deadline = deadline;
     task_list[task_id].phase = phase;
     
-    printf("task register %d", task_id);
+    printf("task register %d\n", task_id);
 }
 
-// Called by a task to signal the termination of an instance and wait for the next activation
-void TMAN_TaskWaitPeriod(){
-    xSemaphoreTake(task_list[1].x, portMAX_DELAY);
-    //xSemaphoreTake(tI[2].x, portMAX_DELAY);
-      // xTaskAbortDelay() instead delayUnitl ???)
-}
 
 // Returns statisticals information about a task. Provided information must include at least the number of activations, but additional
 // (ex: number of deadline misses) will be valued.
