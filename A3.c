@@ -34,24 +34,20 @@
 #define PRIO_A	 tskIDLE_PRIORITY + 1
 #define PRIO_B	 tskIDLE_PRIORITY + 1
 #define PRIO_C	 tskIDLE_PRIORITY + 1
-#define PRIO_D	 tskIDLE_PRIORITY
-#define PRIO_E	 tskIDLE_PRIORITY
-#define PRIO_F	 tskIDLE_PRIORITY
+#define PRIO_D	 tskIDLE_PRIORITY + 1
+#define PRIO_E	 tskIDLE_PRIORITY + 1
+#define PRIO_F	 tskIDLE_PRIORITY + 1
 
 int idA = 0;
 int idB = 1;
 int idC = 2;
-TaskHandle_t hA;
-TaskHandle_t hB;
-TaskHandle_t hC;
+int idD = 3;
+int idE = 4;
+int idF = 5;
+
 
 void simpleA(void *pvParam)
 {
-    int iTaskTicks = 0;
-    uint8_t mesg[80];
-    // Initialize the pxPreviousWakeTime variable with the current time
-    TickType_t pxPreviousWakeTime = xTaskGetTickCount();
-
     TickType_t t;
     
     for(;;) {
@@ -59,19 +55,13 @@ void simpleA(void *pvParam)
         
         TMAN_TaskWaitPeriod(idA);
         t = xTaskGetTickCount();
-        printf("A %d \n", t);
-        
-        
+        printf("A, %d \n", t);
+
     }
 }
 
 void simpleB(void *pvParam)
 {
-    int iTaskTicks = 0;
-    uint8_t mesg[80];
-    // Initialize the pxPreviousWakeTime variable with the current time
-    TickType_t pxPreviousWakeTime = xTaskGetTickCount();
-
     TickType_t t;
     
     for(;;) {
@@ -79,7 +69,7 @@ void simpleB(void *pvParam)
         
         TMAN_TaskWaitPeriod(idB);
         t = xTaskGetTickCount();
-        printf("B %d \n", t);
+        printf("B, %d \n", t);
         
         
     }
@@ -87,11 +77,6 @@ void simpleB(void *pvParam)
 
 void simpleC(void *pvParam)
 {
-    int iTaskTicks = 0;
-    uint8_t mesg[80];
-    // Initialize the pxPreviousWakeTime variable with the current time
-    TickType_t pxPreviousWakeTime = xTaskGetTickCount();
-
     TickType_t t;
     
     for(;;) {
@@ -99,7 +84,52 @@ void simpleC(void *pvParam)
         
         TMAN_TaskWaitPeriod(idC);
         t = xTaskGetTickCount();
-        printf("C %d \n", t);
+        printf("C, %d \n", t);
+        
+        
+    }
+}
+
+void simpleD(void *pvParam)
+{
+    TickType_t t;
+    
+    for(;;) {
+        //printf("entra aqui???????????\n");
+        
+        TMAN_TaskWaitPeriod(idD);
+        t = xTaskGetTickCount();
+        printf("D, %d \n", t);
+        
+        
+    }
+}
+
+void simpleE(void *pvParam)
+{
+    TickType_t t;
+    
+    for(;;) {
+        //printf("entra aqui???????????\n");
+        
+        TMAN_TaskWaitPeriod(idE);
+        t = xTaskGetTickCount();
+        printf("E, %d \n", t);
+        
+        
+    }
+}
+
+void simpleF(void *pvParam)
+{
+    TickType_t t;
+    
+    for(;;) {
+        //printf("entra aqui???????????\n");
+        
+        TMAN_TaskWaitPeriod(idF);
+        t = xTaskGetTickCount();
+        printf("F, %d \n", t);
         
         
     }
@@ -120,18 +150,31 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     
     TMAN_Init(1000);
 
-    TMAN_TaskAdd(&hA);
-    TMAN_TaskRegisterAtributes(idA, 10, 5, 1, -1);
-    xTaskCreate( simpleA, "A", configMINIMAL_STACK_SIZE, NULL, PRIO_A, &hA );
+    TMAN_TaskAdd();
+    TMAN_TaskRegisterAtributes(idA, 1, 1, 0, -1); // id, period, deadline, phase, precedence
+    xTaskCreate( simpleA, "A", configMINIMAL_STACK_SIZE, NULL, PRIO_A, NULL );
 
+    TMAN_TaskAdd();
+    TMAN_TaskRegisterAtributes(idB, 2, 1, 0, 0);
+    xTaskCreate( simpleB, "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, NULL );
+
+    TMAN_TaskAdd();
+    TMAN_TaskRegisterAtributes(idC, 3, 1, 50, -1);
+    xTaskCreate( simpleC, "C", configMINIMAL_STACK_SIZE, NULL, PRIO_C, NULL );
+    /*
+    TMAN_TaskAdd();
+    TMAN_TaskRegisterAtributes(idD, 4, 1, 50, -1);
+    xTaskCreate( simpleD, "D", configMINIMAL_STACK_SIZE, NULL, PRIO_D, NULL );
     
-    TMAN_TaskAdd(&hB);
-    TMAN_TaskRegisterAtributes(idB, 10, 5, 1, -1);
-    xTaskCreate( simpleB, "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, &hB );
-
-    TMAN_TaskAdd(&hC);
-    TMAN_TaskRegisterAtributes(idC, 10, 5, 1, -1);
-    xTaskCreate( simpleC, "C", configMINIMAL_STACK_SIZE, NULL, PRIO_C, &hC );
+    TMAN_TaskAdd();
+    TMAN_TaskRegisterAtributes(idE, 5, 1, 50, -1);
+    xTaskCreate( simpleE, "E", configMINIMAL_STACK_SIZE, NULL, PRIO_E, NULL );
+    
+    TMAN_TaskAdd();
+    TMAN_TaskRegisterAtributes(idF, 6, 1, 50, -1);
+    xTaskCreate( simpleF, "F", configMINIMAL_STACK_SIZE, NULL, PRIO_F, NULL );
+      */
+    //printf("%d number of Activations\n", TMAN_TaskStats(idF));
 
 	vTaskStartScheduler();
     

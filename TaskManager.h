@@ -20,9 +20,9 @@
 
 void TMAN_Init();
 void TMAN_Close(void);
-void TMAN_TaskAdd(TaskHandle_t);
+void TMAN_TaskAdd();
 void TMAN_TaskRegisterAtributes(int, int, int, int, int);
 void TMAN_TaskWaitPeriod(int);
-void TMAN_TaskStats(void);
+void TMAN_TaskStats(int);
 
 #endif 

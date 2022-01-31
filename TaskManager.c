@@ -31,10 +31,11 @@ typedef struct {
     char* name;
     int id;
     int period;
-    int nextActivation;
     int phase;
     int deadline;
-    TaskHandle_t handler;
+    int precedence;
+    int nActivations;
+    int nCompletions;
     SemaphoreHandle_t sem;
 } taskInfo;
 
@@ -50,7 +51,6 @@ int task_counter = 0;
 
 void tick_updater(void *pvParam)
 {
-    
     //printf("entrou\n");
     int iTaskTicks = 0;
     
@@ -58,21 +58,45 @@ void tick_updater(void *pvParam)
     TickType_t pxPreviousWakeTime = xTaskGetTickCount();
     //TickType_t pxPreviousWakeTime = xTaskGetTickCount();
     for(;;) {
-        
-        
         //printf("TICK %d\n", pxPreviousWakeTime);
-        
         // Initialize the pxPreviousWakeTime variable with the current time
         
-        
-        printf("TICK %d\n", pxPreviousWakeTime);
-        printf("TMAN %d\n", tick_now);
+        //printf("TICK %d\n", pxPreviousWakeTime);
+        printf("\nTMAN %d\n", tick_now);
         
         
         for(int i = 0; i < task_counter; i++) {
-            printf("resume %d\n", i);
+            //printf("resume %d\n", i);
             
-            xSemaphoreGive(task_list[i].sem);
+            //xSemaphoreGive(task_list[i].sem);
+            //printf("\ntick_now %d --> phase %d\n", tick_now, task_list[i].phase);
+            //printf("\ntick_now %d\n", tick_now);
+            int x = 0;
+            
+            if(task_list[i].precedence != -1 && task_list[i].precedence < task_counter){  
+                //printf("ola\n");
+                int precedent = task_list[i].precedence;
+                //printf("%d, %d\n", task_list[i].nCompletions, task_list[precedent].nCompletions);
+                if(task_list[i].nCompletions < task_list[precedent].nCompletions){
+                    x = 1; // esta task tem um precedente que já terminou mais vezes que ela. Pode executar.
+                }
+            }
+            if(task_list[i].precedence == -1 || x == 1){
+                if(tick_now == task_list[i].phase){
+                    //printf("first %d\n", i);
+
+                    xSemaphoreGive(task_list[i].sem);
+                    task_list[i].nActivations++;
+                    //printf("%d nActivations\n", task_list[i].nActivations);
+                } 
+                else if((tick_now - task_list[i].phase) % task_list[i].period == 0){
+                    //printf("resume %d\n", i);
+                    xSemaphoreGive(task_list[i].sem);
+                    task_list[i].nActivations++;
+                    //printf("%d nActivations\n", task_list[i].nActivations);
+                }
+           }
+
             //printf("dá give\n");
             //vTaskResume(task_list[i].handler);
         }
@@ -91,7 +115,8 @@ void tick_updater(void *pvParam)
 void TMAN_TaskWaitPeriod(int task_id){
     //printf("ENTRA NA TASK WAIT??\n");
     xSemaphoreTake(task_list[task_id].sem, portMAX_DELAY);
-    printf("sleep %d\n", task_id);
+    //printf("sleep %d\n", task_id);
+    task_list[task_id].nCompletions++;
     //vTaskSuspend(task_list[task_id].handler);
 
 }
@@ -111,13 +136,14 @@ void TMAN_Close(){
 }
 
 // Add a task to the framework
-void TMAN_TaskAdd(TaskHandle_t handler){
-    
+void TMAN_TaskAdd(){
+    task_list[task_counter].nActivations = 0;
+    task_list[task_counter].nCompletions = -1;
     task_list[task_counter].sem =  xSemaphoreCreateBinary();
     task_list[task_counter].id = task_counter;
-    task_list[task_counter].handler = handler;
+    //task_list[task_counter].handler = handler;
     
-    printf("task add %d\n", task_counter);
+    //printf("task add %d\n", task_counter);
     
     task_counter++;
 }
@@ -126,16 +152,16 @@ void TMAN_TaskAdd(TaskHandle_t handler){
 void TMAN_TaskRegisterAtributes(int task_id, int period, int deadline, int phase, int precedence){
     
     task_list[task_id].period = period;
-    task_list[task_id].nextActivation = period + phase;
     task_list[task_id].deadline = deadline;
     task_list[task_id].phase = phase;
+    task_list[task_id].precedence = precedence;
     
-    printf("task register %d\n", task_id);
+    //printf("task register %d\n", task_id);
 }
 
 
 // Returns statisticals information about a task. Provided information must include at least the number of activations, but additional
 // (ex: number of deadline misses) will be valued.
-void TMAN_TaskStats(){
-    
-}
+/*int TMAN_TaskStats(int task_id){
+    return task_list[task_counter].nActivations;
+}*/
