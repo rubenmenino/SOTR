@@ -44,6 +44,7 @@ int idC = 2;
 int idD = 3;
 int idE = 4;
 int idF = 5;
+int tman_ticks = 1000;
 
 
 void simpleA(void *pvParam)
@@ -54,8 +55,9 @@ void simpleA(void *pvParam)
         //printf("entra aqui???????????\n");
         
         TMAN_TaskWaitPeriod(idA);
-        t = xTaskGetTickCount();
+        t = xTaskGetTickCount() / tman_ticks;
         printf("A, %d \n", t);
+ 
 
     }
 }
@@ -68,8 +70,9 @@ void simpleB(void *pvParam)
         //printf("entra aqui???????????\n");
         
         TMAN_TaskWaitPeriod(idB);
-        t = xTaskGetTickCount();
+        t = xTaskGetTickCount() / tman_ticks;
         printf("B, %d \n", t);
+
         
         
     }
@@ -83,8 +86,9 @@ void simpleC(void *pvParam)
         //printf("entra aqui???????????\n");
         
         TMAN_TaskWaitPeriod(idC);
-        t = xTaskGetTickCount();
+        t = xTaskGetTickCount() / tman_ticks;
         printf("C, %d \n", t);
+
         
         
     }
@@ -98,8 +102,9 @@ void simpleD(void *pvParam)
         //printf("entra aqui???????????\n");
         
         TMAN_TaskWaitPeriod(idD);
-        t = xTaskGetTickCount();
+        t = xTaskGetTickCount() / tman_ticks;
         printf("D, %d \n", t);
+
         
         
     }
@@ -113,8 +118,9 @@ void simpleE(void *pvParam)
         //printf("entra aqui???????????\n");
         
         TMAN_TaskWaitPeriod(idE);
-        t = xTaskGetTickCount();
+        t = xTaskGetTickCount() / tman_ticks;
         printf("E, %d \n", t);
+
         
         
     }
@@ -128,10 +134,9 @@ void simpleF(void *pvParam)
         //printf("entra aqui???????????\n");
         
         TMAN_TaskWaitPeriod(idF);
-        t = xTaskGetTickCount();
+        t = xTaskGetTickCount() / tman_ticks;
         printf("F, %d \n", t);
-        
-        
+    
     }
 }
 
@@ -148,20 +153,21 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     // Welcome message
     printf("TMAN TESTING\n");
     
-    TMAN_Init(1000);
+    TMAN_Init(tman_ticks);
 
+    
     TMAN_TaskAdd();
-    TMAN_TaskRegisterAtributes(idA, 1, 1, 0, -1); // id, period, deadline, phase, precedence
+    TMAN_TaskRegisterAtributes(idA, 8, 8, 4, -1); // id, period, deadline, phase, precedence
     xTaskCreate( simpleA, "A", configMINIMAL_STACK_SIZE, NULL, PRIO_A, NULL );
 
     TMAN_TaskAdd();
-    TMAN_TaskRegisterAtributes(idB, 2, 1, 0, 0);
+    TMAN_TaskRegisterAtributes(idB, 4, 4, 0, 0);
     xTaskCreate( simpleB, "B", configMINIMAL_STACK_SIZE, NULL, PRIO_B, NULL );
-
+/*
     TMAN_TaskAdd();
     TMAN_TaskRegisterAtributes(idC, 3, 1, 50, -1);
     xTaskCreate( simpleC, "C", configMINIMAL_STACK_SIZE, NULL, PRIO_C, NULL );
-    /*
+/*
     TMAN_TaskAdd();
     TMAN_TaskRegisterAtributes(idD, 4, 1, 50, -1);
     xTaskCreate( simpleD, "D", configMINIMAL_STACK_SIZE, NULL, PRIO_D, NULL );
@@ -173,11 +179,14 @@ int mainSetrLedBlinkA3(int argc, char** argv) {
     TMAN_TaskAdd();
     TMAN_TaskRegisterAtributes(idF, 6, 1, 50, -1);
     xTaskCreate( simpleF, "F", configMINIMAL_STACK_SIZE, NULL, PRIO_F, NULL );
-      */
+     */
     //printf("%d number of Activations\n", TMAN_TaskStats(idF));
 
-	vTaskStartScheduler();
     
+    
+    
+	vTaskStartScheduler();
+    TMAN_Close();
     return (0);
     
     
